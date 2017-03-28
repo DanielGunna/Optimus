@@ -13,6 +13,7 @@ public class Simplex {
     private double[][] matriz ;
     private double[][] matrizInferior;
     private double[] variaveis;
+    private boolean[][] marcados;
     private double[][] restricoes;
     private int quantVariaveis;
 
@@ -63,6 +64,7 @@ public class Simplex {
     private void multiplicaLinha(double inverso, int linhaPermitida) {
         for( int coluna = 0 ; coluna < quantVariaveis + 1 ; coluna++){
                matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(inverso);
+               marcados[linha][colunaPermitida] = true;
           }
     }
 
@@ -75,6 +77,7 @@ public class Simplex {
     private void multiplicaColuna(double inverso, int colunaPermitida) {
         for( int linha = 0 ; linha < quantRestricoes + 1 ; linha++){
                 matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(-1*inverso);
+                marcados[linha][colunaPermitida] = true;
         }
     }
     /**
@@ -117,6 +120,13 @@ public class Simplex {
 
     }
 
+    private void multiplaElementosMarcados(){
+        for(int linha  = 0; linha < matriz.length ; linha++){
+
+        }
+
+    }
+
     /**
      * Metodo   que executa primeira parte do Simplex
      *  
@@ -129,6 +139,19 @@ public class Simplex {
         multiplicaLinha(inverso,linhaPermitida);
         multiplicaColuna(inverso,colunaPermitida);
         matrizInferior[linhaPermitida][colunaPermitida] = inverso;
+        multiplaElementosMarcados();
+    }
+
+    private void simplex(){
+       primeiroPasso();
+    }
+
+    private void trocaCelulaInferior(int linha permitida, int colunaPermitida){
+      
+    }
+
+    private void algoritmoDaTroca(int linhaPermitida, int colunaPermitida){
+        trocaCelulaInferior();
     }
 
     /**
@@ -148,6 +171,7 @@ public class Simplex {
                 {16.0,4.0,2.0},
                 {3.0,0.0,1.0}};
         matrizInferior = new double[matriz.length][matriz[0].length];
+        marcados = new boolean[matriz.length][matriz[0].length];
 
         this.matriz = matriz.clone();
         primeiroPasso();
@@ -155,13 +179,6 @@ public class Simplex {
 
     }
 
-    private void simplex() {
-
-    }
-
-
-   
-    
     public static void main(String[] args) {
  
         new Simplex().teste();
