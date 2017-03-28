@@ -23,7 +23,7 @@ public class Simplex {
                 return linha ;
             }
         }
-        return -1;
+        return  Integer.MAX_VALUE;
     }
 
     /**
@@ -37,7 +37,7 @@ public class Simplex {
                 return coluna;
             }
         }
-        return -1;
+        return  Integer.MAX_VALUE;
     }
     /**
      * Funcao que retorna a linha permitida com menor razao entro o ML
@@ -57,7 +57,7 @@ public class Simplex {
      */
     private void multiplicaLinha(double inverso, int linhaPermitida) {
         for( int coluna = 0 ; coluna < quantVariaveis + 1 ; coluna++){
-               matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(inverso);
+               matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(-1*inverso);
                marcados[linhaPermitida][coluna] = true;
           }
     }
@@ -70,7 +70,7 @@ public class Simplex {
      */
     private void multiplicaColuna(double inverso, int colunaPermitida) {
         for( int linha = 0 ; linha < quantRestricoes + 1 ; linha++){
-                matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(-1*inverso);
+                matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(inverso);
                 marcados[linha][colunaPermitida] = true;
         }
     }
@@ -83,7 +83,7 @@ public class Simplex {
      */
     private int getLinhaMenor(int colunaPermitida){
         double menor = Double.MAX_VALUE;
-        int linhaMenor = -1;
+        int linhaMenor = Integer.MAX_VALUE;
         for(int linha = 1 ; linha < quantRestricoes ; linha++){
             if( matriz[linha][colunaPermitida] != 0){
                 double  razao = (matriz[linha][COLUNA_ML] / matriz[linha][colunaPermitida]);
@@ -147,7 +147,7 @@ public class Simplex {
            return matriz[linha][coluna];
          }
       }
-      return -1.0;
+      return Double.MAX_VALUE;
     }
 
     private double getMarcadoColuna(int coluna){
@@ -156,7 +156,7 @@ public class Simplex {
            return matrizInferior[linha][coluna];
          }
       }
-      return -1.0;
+      return  Double.MAX_VALUE;
     }
 
     private void algoritmoDaTroca(int linhaPermitida, int colunaPermitida){
