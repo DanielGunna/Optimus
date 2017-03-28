@@ -55,7 +55,7 @@ public class Simplex {
     }
 
     /**
-     * Funcao que  multiplica a posicao inferior da linha  do elemento permitido
+     * Metodo que  multiplica a posicao inferior da linha  do elemento permitido
      * pelo inverso do elemento permitido
      * @param linhaPermitida Linha permitida
      *
@@ -67,7 +67,7 @@ public class Simplex {
     }
 
     /**
-     * Funcao que  multiplica a posicao inferior da coluna  do elemento permitido
+     * Metodo que  multiplica a posicao inferior da coluna  do elemento permitido
      * pelo inverso do elemento permitido
      * @param  colunaPermitida Coluna permitida
      *
@@ -77,7 +77,13 @@ public class Simplex {
                 matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(-1*inverso);
         }
     }
-
+    /**
+     * Funcao que  retorna o indice da linha do elemento com menor 
+     * razao ML/Elemento da coluna permitida
+     * pelo inverso do elemento permitido
+     * @param  colunaPermitida Coluna permitida
+     * @return Indice da linha do elemento de menor razao
+     */
     private int getLinhaMenor(int colunaPermitida){
         double menor = Double.MAX_VALUE;
         int linhaMenor = -1;
@@ -96,7 +102,10 @@ public class Simplex {
     private void processarFuncao(String funcao){
 
     }
-
+    /**
+     * Metodo   que mostra a matriz do Simplex 
+     *  
+     */
     private void mostrar(){
         for(int x = 0; x < quantRestricoes + 1; x++){
             for(int y = 0; y < quantVariaveis  + 1; y++){
@@ -108,7 +117,10 @@ public class Simplex {
 
     }
 
-
+    /**
+     * Metodo   que executa primeira parte do Simplex
+     *  
+     */
     private void primeiroPasso(){
         int linhamembroLivre = getMembroLivreNegativo();
         int colunaPermitida = getVariavelNaoBasicaNegativa(linhamembroLivre);
@@ -119,7 +131,10 @@ public class Simplex {
         matrizInferior[linhaPermitida][colunaPermitida] = inverso;
     }
 
-    
+    /**
+     * Metodo   que executa teste do algoritmo
+     *  
+     */
     private void teste(){
         quantRestricoes = 3;
         quantVariaveis = 2 ;
