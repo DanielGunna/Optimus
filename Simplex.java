@@ -1,0 +1,158 @@
+ 
+
+/**
+ *
+ * @author Daniel Gunna
+ */
+public class Simplex {
+
+    
+    
+  private static final int COLUNA_ML = 0;
+    private int quantRestricoes;
+    private double[][] matriz ;
+    private double[][] matrizInferior;
+    private double[] variaveis;
+    private double[][] restricoes;
+    private int quantVariaveis;
+
+
+
+    /**
+     * Funcao para encontra membro livre negativo
+     *  @return Retorna o indice do membro livre negativo na matriz
+     */
+    private int getMembroLivreNegativo(){
+        for(int linha  = 1 ; linha  < quantRestricoes; linha++ ){
+            if(matriz[linha][0] < 0){
+                return linha ;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Funcao que procura por um VNB Negativa na linha do ML negativo
+     * @param  linha Linha do membro livre negativo
+     * @return Retorna o indice do membro livre negativo na matriz
+     */
+    private int  getVariavelNaoBasicaNegativa(int linha){
+        for(int coluna = 1 ; coluna < quantVariaveis ; coluna++){
+            if(matriz[linha][coluna] < 0){
+                return coluna;
+            }
+        }
+        return -1;
+    }
+    /**
+     * Funcao que retorna a linha permitida com menor razao entro o ML
+     * e o elemento da coluna permitida
+     * @param  colunaPermitida Coluna Permitida
+     * @return Retorna o indice da linha permitida
+     */
+    private int getLinhaMembroPermitido(int colunaPermitida) {
+        return getLinhaMenor(colunaPermitida);
+    }
+
+    /**
+     * Funcao que  multiplica a posicao inferior da linha  do elemento permitido
+     * pelo inverso do elemento permitido
+     * @param linhaPermitida Linha permitida
+     *
+     */
+    private void multiplicaLinha(double inverso, int linhaPermitida) {
+        for( int coluna = 0 ; coluna < quantVariaveis + 1 ; coluna++){
+               matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(inverso);
+          }
+    }
+
+    /**
+     * Funcao que  multiplica a posicao inferior da coluna  do elemento permitido
+     * pelo inverso do elemento permitido
+     * @param  colunaPermitida Coluna permitida
+     *
+     */
+    private void multiplicaColuna(double inverso, int colunaPermitida) {
+        for( int linha = 0 ; linha < quantRestricoes + 1 ; linha++){
+                matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(-1*inverso);
+        }
+    }
+
+    private int getLinhaMenor(int colunaPermitida){
+        double menor = Double.MAX_VALUE;
+        int linhaMenor = -1;
+        for(int linha = 1 ; linha < quantRestricoes ; linha++){
+            if( matriz[linha][colunaPermitida] != 0){
+                double  razao = (matriz[linha][COLUNA_ML] / matriz[linha][colunaPermitida]);
+                if(razao > 0 && razao < menor){
+                    menor = razao;
+                    linhaMenor = linha;
+                }
+            }
+        }
+        return  linhaMenor;
+    }
+
+    private void processarFuncao(String funcao){
+
+    }
+
+    private void mostrar(){
+        for(int x = 0; x < quantRestricoes + 1; x++){
+            for(int y = 0; y < quantVariaveis  + 1; y++){
+                System.out.print("("+matriz[x][y]+"/"+matrizInferior[x][y]+") ");
+            }
+            System.out.print("\n");
+        }
+
+
+    }
+
+
+    private void primeiroPasso(){
+        int linhamembroLivre = getMembroLivreNegativo();
+        int colunaPermitida = getVariavelNaoBasicaNegativa(linhamembroLivre);
+        int linhaPermitida = getLinhaMembroPermitido(colunaPermitida);
+        double inverso = (1 / matriz[linhaPermitida][colunaPermitida]);
+        multiplicaLinha(inverso,linhaPermitida);
+        multiplicaColuna(inverso,colunaPermitida);
+        matrizInferior[linhaPermitida][colunaPermitida] = inverso;
+    }
+
+    
+    private void teste(){
+        quantRestricoes = 3;
+        quantVariaveis = 2 ;
+        double[] variaveis = {80.0,60.0};
+        double[][]  restricoes  = {{-24.0,-4.0,-6.0},
+                {16.0,4.0,2.0},
+                {3.0,0.0,1.0}};
+
+        double[][]  matriz = {{0,80.0,60.0},
+                {-24.0,-4.0,-6.0},
+                {16.0,4.0,2.0},
+                {3.0,0.0,1.0}};
+        matrizInferior = new double[matriz.length][matriz[0].length];
+
+        this.matriz = matriz.clone();
+        primeiroPasso();
+        mostrar();
+
+    }
+
+    private void simplex() {
+
+    }
+
+
+   
+    
+    public static void main(String[] args) {
+ 
+        new Simplex().teste();
+    }
+
+    
+    
+    
+}
