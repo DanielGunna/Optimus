@@ -1,13 +1,9 @@
- 
-
 /**
  *
  * @author Daniel Gunna
  */
 public class Simplex {
 
-    
-    
   private static final int COLUNA_ML = 0;
     private int quantRestricoes;
     private double[][] matriz ;
@@ -16,8 +12,6 @@ public class Simplex {
     private boolean[][] marcados;
     private double[][] restricoes;
     private int quantVariaveis;
-
-
 
     /**
      * Funcao para encontra membro livre negativo
@@ -64,7 +58,7 @@ public class Simplex {
     private void multiplicaLinha(double inverso, int linhaPermitida) {
         for( int coluna = 0 ; coluna < quantVariaveis + 1 ; coluna++){
                matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(inverso);
-               marcados[linha][colunaPermitida] = true;
+               marcados[linhaPermitida][coluna] = true;
           }
     }
 
@@ -81,7 +75,7 @@ public class Simplex {
         }
     }
     /**
-     * Funcao que  retorna o indice da linha do elemento com menor 
+     * Funcao que  retorna o indice da linha do elemento com menor
      * razao ML/Elemento da coluna permitida
      * pelo inverso do elemento permitido
      * @param  colunaPermitida Coluna permitida
@@ -106,8 +100,8 @@ public class Simplex {
 
     }
     /**
-     * Metodo   que mostra a matriz do Simplex 
-     *  
+     * Metodo   que mostra a matriz do Simplex
+     *
      */
     private void mostrar(){
         for(int x = 0; x < quantRestricoes + 1; x++){
@@ -116,20 +110,11 @@ public class Simplex {
             }
             System.out.print("\n");
         }
-
-
-    }
-
-    private void multiplaElementosMarcados(){
-        for(int linha  = 0; linha < matriz.length ; linha++){
-
-        }
-
     }
 
     /**
      * Metodo   que executa primeira parte do Simplex
-     *  
+     *
      */
     private void primeiroPasso(){
         int linhamembroLivre = getMembroLivreNegativo();
@@ -139,34 +124,59 @@ public class Simplex {
         multiplicaLinha(inverso,linhaPermitida);
         multiplicaColuna(inverso,colunaPermitida);
         matrizInferior[linhaPermitida][colunaPermitida] = inverso;
-        multiplaElementosMarcados();
+        algoritmoDaTroca(linhaPermitida, colunaPermitida);
     }
 
     private void simplex(){
        primeiroPasso();
     }
 
-    private void trocaCelulaInferior(int linha permitida, int colunaPermitida){
-      
+    private void trocaCelulaInferior(int linhaPermitida, int colunaPermitida){
+        for(int  linha = 0 ; linha < matriz.length ; linha++ ){
+          for(int  coluna = 0 ; coluna < matriz[0].length ; coluna++ ){
+            if(!marcados[linha][coluna]){
+                matrizInferior[linha][coluna] = getMarcadoLinha(linha)*getMarcadoColuna(coluna);
+            }
+          }
+        }
+    }
+
+    private double getMarcadoLinha(int linha){
+      for(int coluna = 0 ; coluna < matriz.length ; coluna++){
+         if(marcados[linha][coluna]){
+           return matriz[linha][coluna];
+         }
+      }
+      return -1.0;
+    }
+
+    private double getMarcadoColuna(int coluna){
+      for(int linha  = 0 ; linha < matriz.length ; linha++){
+         if(marcados[linha][coluna]){
+           return matrizInferior[linha][coluna];
+         }
+      }
+      return -1.0;
     }
 
     private void algoritmoDaTroca(int linhaPermitida, int colunaPermitida){
-        trocaCelulaInferior();
+        trocaCelulaInferior(linhaPermitida,colunaPermitida);
     }
 
     /**
      * Metodo   que executa teste do algoritmo
-     *  
-     */
+     * */
     private void teste(){
         quantRestricoes = 3;
         quantVariaveis = 2 ;
         double[] variaveis = {80.0,60.0};
-        double[][]  restricoes  = {{-24.0,-4.0,-6.0},
+        double[][]  restricoes  =
+                {{-24.0,-4.0,-6.0},
                 {16.0,4.0,2.0},
                 {3.0,0.0,1.0}};
 
-        double[][]  matriz = {{0,80.0,60.0},
+        double[][]  matriz =
+                {{0,80.0,60.0},
                 {-24.0,-4.0,-6.0},
                 {16.0,4.0,2.0},
                 {3.0,0.0,1.0}};
@@ -180,11 +190,11 @@ public class Simplex {
     }
 
     public static void main(String[] args) {
- 
+
         new Simplex().teste();
     }
 
-    
-    
-    
+
+
+
 }
