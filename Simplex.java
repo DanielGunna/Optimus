@@ -1,3 +1,5 @@
+
+
 /**
  *
  * @author Daniel Gunna
@@ -56,8 +58,8 @@ public class Simplex {
      *
      */
     private void multiplicaLinha(double inverso, int linhaPermitida) {
-        for( int coluna = 0 ; coluna < quantVariaveis + 1 ; coluna++){
-               matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(-1*inverso);
+        for( int coluna = 0 ; coluna < matriz[0].length  ; coluna++){
+               matrizInferior[linhaPermitida][coluna] = (matriz[linhaPermitida][coluna] == 0 )? 0 : matriz[linhaPermitida][coluna]*(inverso);
                marcados[linhaPermitida][coluna] = true;
           }
     }
@@ -69,8 +71,8 @@ public class Simplex {
      *
      */
     private void multiplicaColuna(double inverso, int colunaPermitida) {
-        for( int linha = 0 ; linha < quantRestricoes + 1 ; linha++){
-                matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*(inverso);
+        for( int linha = 0 ; linha < matriz.length ; linha++){
+                matrizInferior[linha][colunaPermitida] = (matriz[linha][colunaPermitida] == 0)? 0 : matriz[linha][colunaPermitida]*((-1)*inverso);
                 marcados[linha][colunaPermitida] = true;
         }
     }
@@ -112,6 +114,20 @@ public class Simplex {
         }
     }
 
+        /**
+     * Metodo   que mostra a matriz do Simplex
+     *
+     */
+    private void mostrar(boolean[][] matriz){
+        for(int x = 0; x < quantRestricoes + 1; x++){
+            for(int y = 0; y < quantVariaveis  + 1; y++){
+                System.out.print("("+matriz[x][y] +") ");
+            }
+            System.out.print("\n");
+        }
+    }
+
+
     /**
      * Metodo   que executa primeira parte do Simplex
      *
@@ -120,9 +136,12 @@ public class Simplex {
         int linhamembroLivre = getMembroLivreNegativo();
         int colunaPermitida = getVariavelNaoBasicaNegativa(linhamembroLivre);
         int linhaPermitida = getLinhaMembroPermitido(colunaPermitida);
+        System.out.println("Elemento permitido :" + matriz[linhaPermitida][colunaPermitida]);
         double inverso = (1 / matriz[linhaPermitida][colunaPermitida]);
+        System.out.println("Inverso :" + inverso);
         multiplicaLinha(inverso,linhaPermitida);
         multiplicaColuna(inverso,colunaPermitida);
+        mostrar(marcados);
         matrizInferior[linhaPermitida][colunaPermitida] = inverso;
         algoritmoDaTroca(linhaPermitida, colunaPermitida);
     }
@@ -144,7 +163,7 @@ public class Simplex {
     private double getMarcadoLinha(int linha){
       for(int coluna = 0 ; coluna < matriz.length ; coluna++){
          if(marcados[linha][coluna]){
-           return matriz[linha][coluna];
+           return matrizInferior[linha][coluna];
          }
       }
       return Double.MAX_VALUE;
@@ -153,7 +172,7 @@ public class Simplex {
     private double getMarcadoColuna(int coluna){
       for(int linha  = 0 ; linha < matriz.length ; linha++){
          if(marcados[linha][coluna]){
-           return matrizInferior[linha][coluna];
+           return matriz[linha][coluna];
          }
       }
       return  Double.MAX_VALUE;
