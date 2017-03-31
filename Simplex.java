@@ -1,4 +1,9 @@
 
+
+/**
+ * Created by Daniel on 31/03/17.
+ */
+
 /**
  *
  * @author Daniel Gunna
@@ -6,13 +11,11 @@
 public class Simplex {
 
     private static final int COLUNA_ML = 0;
-    private int quantRestricoes;
     private double[][] matriz;
     private double[][] matrizInferior;
     private double[] variaveis;
     private boolean[][] marcados;
     private double[][] restricoes;
-    private int quantVariaveis;
     private int colunaPermitida;
     private int linhaPermitida;
     private int linhamembroLivre;
@@ -23,7 +26,7 @@ public class Simplex {
      * @return Retorna o indice do membro livre negativo na matriz
      */
     private int getMembroLivreNegativo() {
-        for (int linha = 1; linha < quantRestricoes; linha++) {
+        for (int linha = 1; linha < matriz.length; linha++) {
             if (matriz[linha][0] < 0) {
                 return linha;
             }
@@ -38,8 +41,9 @@ public class Simplex {
      * @return Retorna o indice do membro livre negativo na matriz
      */
     private int getVariavelNaoBasicaNegativa(int linha) {
-        for (int coluna = 1; coluna < quantVariaveis; coluna++) {
+        for (int coluna = 1; coluna < matriz[0].length ;coluna++) {
             if (matriz[linha][coluna] < 0) {
+                System.out.println("Membro negativo " + matriz[linha][coluna]);
                 return coluna;
             }
         }
@@ -50,7 +54,6 @@ public class Simplex {
      * Funcao que retorna a linha permitida com menor razao entro o ML e o
      * elemento da coluna permitida
      *
-     * @param colunaPermitida Coluna Permitida
      * @return Retorna o indice da linha permitida
      */
     private int getLinhaMembroPermitido() {
@@ -61,7 +64,7 @@ public class Simplex {
      * Metodo que multiplica a posicao inferior da linha do elemento permitido
      * pelo inverso do elemento permitido
      *
-     * @param linhaPermitida Linha permitida
+     *
      *
      */
     private void multiplicaLinha(double inverso) {
@@ -75,7 +78,7 @@ public class Simplex {
      * Metodo que multiplica a posicao inferior da coluna do elemento permitido
      * pelo inverso do elemento permitido
      *
-     * @param colunaPermitida Coluna permitida
+     *
      *
      */
     private void multiplicaColuna(double inverso) {
@@ -89,16 +92,17 @@ public class Simplex {
      * Funcao que retorna o indice da linha do elemento com menor razao
      * ML/Elemento da coluna permitida pelo inverso do elemento permitido
      *
-     * @param colunaPermitida Coluna permitida
+     *
      * @return Indice da linha do elemento de menor razao
      */
     private int getLinhaMenor() {
         double menor = Double.MAX_VALUE;
         int linhaMenor = Integer.MAX_VALUE;
-        for (int linha = 1; linha < quantRestricoes; linha++) {
+        for (int linha = 1; linha < matriz.length; linha++) {
             if (matriz[linha][colunaPermitida] != 0) {
                 double razao = (matriz[linha][COLUNA_ML] / matriz[linha][colunaPermitida]);
                 if (razao > 0 && razao < menor) {
+                    System.out.println("Menor "+ matriz[linha][colunaPermitida] + "Razao " + razao);
                     menor = razao;
                     linhaMenor = linha;
                 }
@@ -116,8 +120,8 @@ public class Simplex {
      *
      */
     private void mostrar() {
-        for (int x = 0; x < quantRestricoes + 1; x++) {
-            for (int y = 0; y < quantVariaveis + 1; y++) {
+        for (int x = 0; x < matriz.length ; x++) {
+            for (int y = 0; y < matriz[0].length; y++) {
                 System.out.print("(" + matriz[x][y] + "/" + matrizInferior[x][y] + ") ");
             }
             System.out.print("\n");
@@ -130,8 +134,8 @@ public class Simplex {
      *
      */
     private void mostrar(boolean[][] matriz) {
-        for (int x = 0; x < quantRestricoes + 1; x++) {
-            for (int y = 0; y < quantVariaveis + 1; y++) {
+        for (int x = 0; x < matriz.length ; x++) {
+            for (int y = 0; y < matriz[0].length ; y++) {
                 System.out.print("(" + matriz[x][y] + ") ");
             }
             System.out.print("\n");
@@ -144,15 +148,26 @@ public class Simplex {
      */
     private void primeiroPasso() {
         linhamembroLivre = getMembroLivreNegativo();
-        colunaPermitida = getVariavelNaoBasicaNegativa(linhamembroLivre);
-        linhaPermitida = getLinhaMembroPermitido();
-        System.out.println("Elemento permitido :" + matriz[linhaPermitida][colunaPermitida]);
-        double inverso = (1 / matriz[linhaPermitida][colunaPermitida]);
-        System.out.println("Inverso :" + inverso);
-        multiplicaLinha(inverso);
-        multiplicaColuna(inverso);
-        mostrar(marcados);
-        matrizInferior[linhaPermitida][colunaPermitida] = inverso;
+        while(linhamembroLivre!=Integer.MAX_VALUE){
+            colunaPermitida = getVariavelNaoBasicaNegativa(linhamembroLivre);
+            if(colunaPermitida!=Integer.MAX_VALUE){
+                linhaPermitida = getLinhaMembroPermitido();
+                System.out.println("Elemento permitido :" + matriz[linhaPermitida][colunaPermitida]);
+                double inverso = (1 / matriz[linhaPermitida][colunaPermitida]);
+                System.out.println("Inverso :" + inverso);
+                multiplicaLinha(inverso);
+                multiplicaColuna(inverso);
+                mostrar(marcados);
+                matrizInferior[linhaPermitida][colunaPermitida] = inverso;
+                algoritmoDaTroca();
+                linhamembroLivre = getMembroLivreNegativo();
+                System.out.println("-------------------------------------------");
+            }else{
+                System.out.println("Não existe solução para este problema!");
+                break;
+            }
+
+        }
     }
 
     private void simplex() {
@@ -163,7 +178,12 @@ public class Simplex {
         for (int linha = 0; linha < matrizInferior.length; linha++) {
             for (int coluna = 0; coluna < matrizInferior[0].length; coluna++) {
                 if (!marcados[linha][coluna]) {
-                    matrizInferior[linha][coluna] = getMarcadoLinha(linha) * getMarcadoColuna(coluna);
+                    double marcadoLinha =  getMarcadoLinha(linha);
+                    double marcadoColuna  = getMarcadoColuna(coluna);
+                    matrizInferior[linha][coluna] = marcadoLinha * marcadoColuna;
+                    System.out.println("Marcado da linha"+ linha + " "+ marcadoLinha);
+                    System.out.println("Marcado da coluna"+ coluna + " "+ marcadoColuna);
+                    System.out.println("Matriz inferior "+ matrizInferior[linha][coluna]);
                 }
             }
         }
@@ -186,12 +206,14 @@ public class Simplex {
         }
         return Double.MAX_VALUE;
     }
-     private void somaValores() {
+    private void somaValores() {
         for (int linha = 0; linha < matriz.length; linha++) {
             for (int coluna = 0; coluna < matriz[0].length; coluna++) {
-                  if(!marcados[linha][coluna]){
-                      matriz[linha][coluna]+= matrizInferior[linha][coluna];
-                  }
+                if(!marcados[linha][coluna]){
+                    System.out.println(matriz[linha][coluna]+" "+ matrizInferior[linha][coluna]);
+                    matriz[linha][coluna]+= matrizInferior[linha][coluna];
+                    System.out.println("Igual :" + matriz[linha][coluna]);
+                }
             }
         }
     }
@@ -214,6 +236,7 @@ public class Simplex {
     private void trocaValoresLinha() {
         int aux = 0;
         for (int coluna = 0; coluna < matriz[0].length; coluna++) {
+            System.out.println("Trocando valores " +  matriz[linhaPermitida][coluna]+" "+ matrizInferior[linhaPermitida][coluna]);
             matriz[linhaPermitida][coluna] = matrizInferior[linhaPermitida][coluna];
         }
     }
@@ -222,6 +245,7 @@ public class Simplex {
         int aux = 0;
         for (int linha = 0; linha < matriz.length; linha++) {
             if (linha != linhaPermitida) {
+                System.out.println("Trocando valores " +  matriz[linha][colunaPermitida]+" "+ matrizInferior[linha][colunaPermitida]);
                 matriz[linha][colunaPermitida] = matrizInferior[linha][colunaPermitida];
             }
         }
@@ -231,34 +255,33 @@ public class Simplex {
      * Metodo que executa teste do algoritmo
      *
      */
-    private void teste() {
-        quantRestricoes = 3;
-        quantVariaveis = 2;
-        double[] variaveis = {80.0, 60.0};
+    public  void teste() {
+        double[] variaveis = {5.0, 3.5};
         double[][] restricoes
-                = {{-24.0, -4.0, -6.0},
-                {16.0, 4.0, 2.0},
-                {3.0, 0.0, 1.0}};
+                = {{0, 5.0, 3.5},
+                {400, 1.5, 1.0},
+                {150, 1.0, 0.0},
+                {300, 0.0, 1.0}};
 
         double[][] matriz
-                = {{0, 80.0, 60.0},
-                {-24.0, -4.0, -6.0},
-                {16.0, 4.0, 2.0},
-                {3.0, 0.0, 1.0}};
+                =
+                {{0, 14.0, 22},
+                {250, 2.0, 4.0},
+                {-460, -5.0, -8.0},
+                {40, 1.0, 0.0}};
+
         matrizInferior = new double[matriz.length][matriz[0].length];
         marcados = new boolean[matriz.length][matriz[0].length];
 
         this.matriz = matriz.clone();
         primeiroPasso();
-        algoritmoDaTroca();
+
 
     }
 
-    public static void main(String[] args) {
-
-        new Simplex().teste();
+    public static void main(String[] args){
+       new Simplex().teste();
     }
-
 
 
 }
