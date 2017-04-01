@@ -14,6 +14,42 @@ public class Simplex {
     private int linhamembroLivre;
 
     /**
+     * Metodo que executa primeira parte do Algoritmo Simplex
+     */
+    private void primeiroPasso() {
+        linhamembroLivre = getMembroLivre();
+        while(linhamembroLivre!=Integer.MAX_VALUE){
+            colunaPermitida = getVnbNegativa(linhamembroLivre);
+            if(colunaPermitida!=Integer.MAX_VALUE){
+                resolverIteracao();
+                linhamembroLivre = getMembroLivre();
+            }else{
+                System.out.println("Não existe solução para este problema!");
+                break;
+            }
+
+        }
+    }
+
+    /**
+    * Metodo que executa segunda parte do Algoritmo Simplex
+    */
+   private void segundoPasso(){
+       colunaPermitida = getColunaElementoPositivoFO();
+       while(colunaPermitida != Integer.MAX_VALUE){
+         if(!verificaSeIlimitado()){
+           resolverIteracao();
+           colunaPermitida = getColunaElementoPositivoFO();
+         }else{
+           System.out.println("Este problema possui solução ilimitada!!!");
+           break;
+         }
+
+       }
+   }
+
+
+    /**
      * Funcao para encontra membro livre negativo
      * @return Retorna o indice do membro livre negativo na matriz  caso ele exista
      */
@@ -129,32 +165,18 @@ public class Simplex {
         }
     }
 
-    /**
-     * Metodo que executa primeira parte do Algoritmo Simplex
-     */
-    private void primeiroPasso() {
-        linhamembroLivre = getMembroLivre();
-        while(linhamembroLivre!=Integer.MAX_VALUE){
-            colunaPermitida = getVnbNegativa(linhamembroLivre);
-            if(colunaPermitida!=Integer.MAX_VALUE){
-                linhaPermitida = getLinhaElementoPermitido();
-                System.out.println("Elemento permitido :" + celulaSuperior[linhaPermitida][colunaPermitida]);
-                double inverso = (1 / celulaSuperior[linhaPermitida][colunaPermitida]);
-                System.out.println("Inverso :" + inverso);
-                multiplicaLinha(inverso);
-                multiplicaColuna(inverso);
-                mostrarMarcados();
-                celulaInferior[linhaPermitida][colunaPermitida] = inverso;
-                algoritmoDaTroca();
-                linhamembroLivre = getMembroLivre();
-                System.out.println("-------------------------------------------");
-            }else{
-                System.out.println("Não existe solução para este problema!");
-                break;
-            }
 
-        }
+    private void resolverIteracao(){
+      linhaPermitida = getLinhaElementoPermitido();
+      double inverso = (1 / celulaSuperior[linhaPermitida][colunaPermitida]);
+      multiplicaLinha(inverso);
+      multiplicaColuna(inverso);
+      //mostrarMarcados();
+      celulaInferior[linhaPermitida][colunaPermitida] = inverso;
+      algoritmoDaTroca();
     }
+
+
      /**
      * Funcao que  procura indice da coluna de um elemento positivo na linha da funcao objetiva
      *@return Indice da coluna do elemento positivo
@@ -179,30 +201,12 @@ public class Simplex {
       }
       return true;
     }
-     /**
-     * Metodo que executa primeira parte do Algoritmo Simplex
-     */
-    private void segundoPasso(){
-        colunaPermitida = getColunaElementoPositivoFO();
-        while(colunaPermitida != Integer.MAX_VALUE){
-          if(!verificaSeIlimitado()){
-            linhaPermitida = getLinhaMenor();
-            System.out.println("Elemento permitido :" + celulaSuperior[linhaPermitida][colunaPermitida]);
-            double inverso = (1 / celulaSuperior[linhaPermitida][colunaPermitida]);
-            System.out.println("Inverso :" + inverso);
-            multiplicaLinha(inverso);
-            multiplicaColuna(inverso);
-            mostrarMarcados();
-            celulaInferior[linhaPermitida][colunaPermitida] = inverso;
-            algoritmoDaTroca();
-            System.out.println("-------------------------------------------");
-          }else{
-            System.out.println("Este problema possui solução ilimitada!!!");
-          }
-          colunaPermitida = getColunaElementoPositivoFO();
-        }
-    }
 
+
+    /**
+    * Metodo que preenche a celula inferior dos elementos nao marcados com
+    * o produto do elemento marcado da coluna com o da linha
+    */
     private void preencheCelulaInferior(int linhaPermitida, int colunaPermitida) {
         for (int linha = 0; linha < celulaInferior.length; linha++) {
             for (int coluna = 0; coluna < celulaInferior[0].length; coluna++) {
@@ -213,6 +217,11 @@ public class Simplex {
         }
     }
 
+    /**
+    *Funcao que busca o elemento marcado de uma linha
+    *@param linha Linha que deseja proucurar
+    *@return elemento marcado da linha
+    */
     private double getMarcadoLinha(int linha) {
         for (int coluna = 0; coluna < celulaInferior.length; coluna++) {
             if (marcados[linha][coluna]) {
@@ -221,7 +230,11 @@ public class Simplex {
         }
         return Double.MAX_VALUE;
     }
-
+    /**
+    *Funcao que busca o elemento marcado de uma coluna
+    *@param coluna Coluna que deseja proucurar
+    *@return elemento marcado da coluna
+    */
     private double getMarcadoColuna(int coluna) {
         for (int linha = 0; linha < celulaSuperior.length; linha++) {
             if (marcados[linha][coluna]) {
@@ -230,18 +243,23 @@ public class Simplex {
         }
         return Double.MAX_VALUE;
     }
+
+    /**
+    *Metodo que soma valores da celula inferior com o da
+    *celula superior dos elementos nao marcados
+    */
     private void somaValores() {
         for (int linha = 0; linha < celulaSuperior.length; linha++) {
             for (int coluna = 0; coluna < celulaSuperior[0].length; coluna++) {
                 if(!marcados[linha][coluna]){
-                    System.out.println(celulaSuperior[linha][coluna]+" "+ celulaInferior[linha][coluna]);
                     celulaSuperior[linha][coluna]+= celulaInferior[linha][coluna];
-                    System.out.println("Igual :" + celulaSuperior[linha][coluna]);
                 }
             }
         }
     }
-
+    /**
+    *Metodo que realiza  o algoritmo da troca
+    */
     private void algoritmoDaTroca() {
         preencheCelulaInferior(linhaPermitida, colunaPermitida);
         mostrar();
@@ -252,18 +270,28 @@ public class Simplex {
         mostrar();
     }
 
+    /**
+    *Metodo troca valores da linha e coluna permitidas passando os
+    * os valores das celulas inferiores para as superiores
+    */
     private void trocaValores() {
         trocaValoresLinha();
         trocaValoresColuna();
     }
-
+    /**
+    *Metodo troca valores da linha permitida passando os
+    * os valores das celulas inferiores para as superiores
+    */
     private void trocaValoresLinha() {
         int aux = 0;
         for (int coluna = 0; coluna < celulaSuperior[0].length; coluna++) {
             celulaSuperior[linhaPermitida][coluna] = celulaInferior[linhaPermitida][coluna];
         }
     }
-
+    /**
+    *Metodo troca valores da coluna permitida passando os
+    * os valores das celulas inferiores para as superiores
+    */
     private void trocaValoresColuna() {
         int aux = 0;
         for (int linha = 0; linha < celulaSuperior.length; linha++) {
@@ -298,8 +326,12 @@ public class Simplex {
         this.celulaSuperior = matriz.clone();
         primeiroPasso();
         segundoPasso();
+    }
 
 
+    private void solve(){
+      primeiroPasso();
+      segundoPasso();
     }
 
     public static void main(String[] args){
