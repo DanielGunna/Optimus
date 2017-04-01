@@ -1,6 +1,6 @@
 /**
  *
- * @author Daniel Gunna
+ * @author Daniel Gunna - 510348
  */
 public class Simplex {
 
