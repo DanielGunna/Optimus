@@ -1,5 +1,4 @@
 /**
- *
  * @author Daniel Gunna - 510348
  */
 public class Simplex {
@@ -27,7 +26,6 @@ public class Simplex {
                 System.out.println("Não existe solução para este problema!");
                 break;
             }
-
         }
     }
 
@@ -44,7 +42,6 @@ public class Simplex {
            System.out.println("Este problema possui solução ilimitada!!!");
            break;
          }
-
        }
    }
 
@@ -165,6 +162,9 @@ public class Simplex {
         }
     }
 
+    /**
+    *Metodo que realiza uma iterecao do algoritmo Simplex
+    */
 
     private void resolverIteracao(){
       linhaPermitida = getLinhaElementoPermitido();
@@ -303,12 +303,12 @@ public class Simplex {
 
     /**
      * Metodo que executa teste do algoritmo
-     *
      */
     public  void teste() {
         double[] variaveis = {5.0, 3.5};
         double[][] restricoes
-                = {{0, 5.0, 3.5},
+                =
+                {{0, 5.0, 3.5},
                 {400, 1.5, 1.0},
                 {150, 1.0, 0.0},
                 {300, 0.0, 1.0}};
@@ -322,14 +322,23 @@ public class Simplex {
 
         celulaInferior = new double[matriz.length][matriz[0].length];
         marcados = new boolean[matriz.length][matriz[0].length];
-
         this.celulaSuperior = matriz.clone();
         primeiroPasso();
         segundoPasso();
     }
 
+    /**
+    *Metodo que  interpreta funcao objetiva
+    */
+    private void processarFuncao(){
 
+    }
+
+    /**
+    *Metodo que resolve o Simplex
+    */
     private void solve(){
+      processarFuncao();
       primeiroPasso();
       segundoPasso();
     }
