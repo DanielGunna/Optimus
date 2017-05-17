@@ -1,6 +1,6 @@
-package com.gunna.controller;
+//package com.gunna.controller;
 
-import org.json.JSONObject;
+//import org.json.JSONObject;
 
 /**
  * @author Daniel Gunna - 510348
@@ -15,6 +15,7 @@ public class Simplex {
     private int colunaPermitida;
     private int linhaPermitida;
     private int linhamembroLivre;
+    private static final int CURR_BEGIN  = 0 ;
 
     /**
      * Metodo que executa primeira parte do Algoritmo Simplex
@@ -55,7 +56,7 @@ public class Simplex {
      * @return Retorna o indice do membro livre negativo na matriz  caso ele exista
      */
     private int getMembroLivre() {
-        for (int linha = 1; linha < celulaSuperior.length; linha++) {
+        for (int linha = CURR_BEGIN + 1; linha < celulaSuperior.length; linha++) {
             if (celulaSuperior[linha][0] < 0) {
                 return linha;
             }
@@ -69,7 +70,7 @@ public class Simplex {
      * @return Retorna o indice da VNB  negativa na linha do ML
      */
     private int getVnbNegativa(int linha) {
-        for (int coluna = 1; coluna < celulaSuperior[0].length ;coluna++) {
+        for (int coluna = CURR_BEGIN + 1; coluna < celulaSuperior[0].length ;coluna++) {
             if (celulaSuperior[linha][coluna] < 0) {
                 return coluna;
             }
@@ -92,7 +93,7 @@ public class Simplex {
      * Tambem marca os elementos da linha do elemento permitido
      * */
     private void multiplicaLinha(double inverso) {
-        for (int coluna = 0; coluna < celulaSuperior[0].length; coluna++) {
+        for (int coluna = CURR_BEGIN; coluna < celulaSuperior[0].length; coluna++) {
             //Se celulaSuperior  = 0, apenas coloque 0 ma celula inferior,
             //pois e possivel que se multiplicarmos por um valor negativo
             //obtenhamos o valor -0
@@ -108,7 +109,7 @@ public class Simplex {
      * @param inverso Inverso do elemento selecionado
      */
     private void multiplicaColuna(double inverso) {
-        for (int linha = 0; linha < celulaSuperior.length; linha++) {
+        for (int linha = CURR_BEGIN; linha < celulaSuperior.length; linha++) {
             //Se celulaSuperior  = 0, apenas coloque 0 ma celula inferior,
             //pois e possivel que se multiplicarmos por um valor negativo
             //obtenhamos o valor -0
@@ -126,7 +127,7 @@ public class Simplex {
         double menor = Double.MAX_VALUE;
         int linhaMenor = Integer.MAX_VALUE;
         double razao;
-        for (int linha = 1; linha < celulaSuperior.length; linha++) {
+        for (int linha = CURR_BEGIN + 1; linha < celulaSuperior.length; linha++) {
             //Evita divisoes por 0
             if (celulaSuperior[linha][colunaPermitida] != 0) {
                 //ML/Elemento da Coluna Permitida
@@ -187,7 +188,7 @@ public class Simplex {
      *@return Indice da coluna do elemento positivo
      */
      private int getColunaElementoPositivoFO(){
-      for(int coluna = 1 ;  coluna < celulaSuperior[0].length ; coluna ++){
+      for(int coluna = CURR_BEGIN + 1 ;  coluna < celulaSuperior[0].length ; coluna ++){
         if(celulaSuperior[LINHA_FO][coluna] > 0){
           return coluna;
         }
@@ -199,7 +200,7 @@ public class Simplex {
      *@return coluna Indice da coluna do elemento positivo
      **/
     private boolean  verificaSeIlimitado(){
-      for(int linha   = 1 ; linha < celulaSuperior.length; linha ++ ){
+      for(int linha   =  CURR_BEGIN + 1 ; linha < celulaSuperior.length; linha ++ ){
         if(celulaSuperior[linha][colunaPermitida] > 0){
             return false;
         }
@@ -213,8 +214,8 @@ public class Simplex {
     * o produto do elemento marcado da coluna com o da linha
     */
     private void preencheCelulaInferior(int linhaPermitida, int colunaPermitida) {
-        for (int linha = 0; linha < celulaInferior.length; linha++) {
-            for (int coluna = 0; coluna < celulaInferior[0].length; coluna++) {
+        for (int linha = CURR_BEGIN; linha < celulaInferior.length; linha++) {
+            for (int coluna = CURR_BEGIN; coluna < celulaInferior[0].length; coluna++) {
                 if (!marcados[linha][coluna]) {
                     celulaInferior[linha][coluna] = getMarcadoLinha(linha) * getMarcadoColuna(coluna);
                 }
@@ -228,7 +229,7 @@ public class Simplex {
     *@return elemento marcado da linha
     */
     private double getMarcadoLinha(int linha) {
-        for (int coluna = 0; coluna < celulaInferior.length; coluna++) {
+        for (int coluna = CURR_BEGIN; coluna < celulaInferior.length; coluna++) {
             if (marcados[linha][coluna]) {
                 return celulaInferior[linha][coluna];
             }
@@ -241,7 +242,7 @@ public class Simplex {
     *@return elemento marcado da coluna
     */
     private double getMarcadoColuna(int coluna) {
-        for (int linha = 0; linha < celulaSuperior.length; linha++) {
+        for (int linha = CURR_BEGIN; linha < celulaSuperior.length; linha++) {
             if (marcados[linha][coluna]) {
                 return celulaSuperior[linha][coluna];
             }
@@ -254,8 +255,8 @@ public class Simplex {
     *celula superior dos elementos nao marcados
     */
     private void somaValores() {
-        for (int linha = 0; linha < celulaSuperior.length; linha++) {
-            for (int coluna = 0; coluna < celulaSuperior[0].length; coluna++) {
+        for (int linha = CURR_BEGIN; linha < celulaSuperior.length; linha++) {
+            for (int coluna = CURR_BEGIN; coluna < celulaSuperior[0].length; coluna++) {
                 if(!marcados[linha][coluna]){
                     celulaSuperior[linha][coluna]+= celulaInferior[linha][coluna];
                 }
@@ -289,7 +290,7 @@ public class Simplex {
     */
     private void trocaValoresLinha() {
         int aux = 0;
-        for (int coluna = 0; coluna < celulaSuperior[0].length; coluna++) {
+        for (int coluna = CURR_BEGIN; coluna < celulaSuperior[0].length; coluna++) {
             celulaSuperior[linhaPermitida][coluna] = celulaInferior[linhaPermitida][coluna];
         }
     }
@@ -299,7 +300,7 @@ public class Simplex {
     */
     private void trocaValoresColuna() {
         int aux = 0;
-        for (int linha = 0; linha < celulaSuperior.length; linha++) {
+        for (int linha = CURR_BEGIN; linha < celulaSuperior.length; linha++) {
             if (linha != linhaPermitida) {
                 celulaSuperior[linha][colunaPermitida] = celulaInferior[linha][colunaPermitida];
             }
@@ -332,6 +333,7 @@ public class Simplex {
         segundoPasso();
     }
 
+
     /**
     *Metodo que  interpreta funcao objetiva
     */
@@ -339,16 +341,17 @@ public class Simplex {
 
     }
 
+
+    public static void main(String[] args){
+      new Simplex().teste();
+    }
     /**
     *Metodo que resolve o Simplex
     */
-    public JSONObject solve(){
-      processarFuncao();
-      primeiroPasso();
-      segundoPasso();
-      return new JSONObject();
-    }
- 
-
-
+    //public JSONObject solve(){
+    //  processarFuncao();
+    //  primeiroPasso();
+    //  segundoPasso();
+    //  return new JSONObject();
+    //}
 }
