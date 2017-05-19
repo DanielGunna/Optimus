@@ -7,15 +7,15 @@
  */
 public class Simplex {
 
-    private static final int COLUNA_ML = 0;
-    private static final int LINHA_FO = 0;
+    private static final int COLUNA_ML = 1;
+    private static final int LINHA_FO = 1;
     private double[][] celulaSuperior;
     private double[][] celulaInferior;
     private boolean[][] marcados;
     private int colunaPermitida;
     private int linhaPermitida;
     private int linhamembroLivre;
-    private static final int CURR_BEGIN  = 0 ;
+    private static final int CURR_BEGIN  = 1 ;
 
     /**
      * Metodo que executa primeira parte do Algoritmo Simplex
@@ -281,6 +281,9 @@ public class Simplex {
     * os valores das celulas inferiores para as superiores
     */
     private void trocaValores() {
+		double aux = celulaSuperior[linhaPermitida][0];
+		celulaSuperior[linhaPermitida][0] = celulaSuperior[0][colunaPermitida];
+		celulaSuperior[0][colunaPermitida] = aux;
         trocaValoresLinha();
         trocaValoresColuna();
     }
@@ -291,7 +294,7 @@ public class Simplex {
     private void trocaValoresLinha() {
         int aux = 0;
         for (int coluna = CURR_BEGIN; coluna < celulaSuperior[0].length; coluna++) {
-            celulaSuperior[linhaPermitida][coluna] = celulaInferior[linhaPermitida][coluna];
+			celulaSuperior[linhaPermitida][coluna] = celulaInferior[linhaPermitida][coluna];
         }
     }
     /**
@@ -302,7 +305,7 @@ public class Simplex {
         int aux = 0;
         for (int linha = CURR_BEGIN; linha < celulaSuperior.length; linha++) {
             if (linha != linhaPermitida) {
-                celulaSuperior[linha][colunaPermitida] = celulaInferior[linha][colunaPermitida];
+					celulaSuperior[linha][colunaPermitida] = celulaInferior[linha][colunaPermitida];
             }
         }
     }
@@ -319,15 +322,25 @@ public class Simplex {
                 {150, 1.0, 0.0},
                 {300, 0.0, 1.0}};
 
-        double[][] matriz
+        //double[][] matriz
+                //=
+                //{{0, 14.0, 22},
+                //{250, 2.0, 4.0},
+                //{-460, -5.0, -8.0},
+                //{40, 1.0, 0.0}};
+        double[] vars = {1.0,2.0};				
+		double[][] matriz
                 =
-                {{0, 14.0, 22},
-                {250, 2.0, 4.0},
-                {-460, -5.0, -8.0},
-                {40, 1.0, 0.0}};
-
-        celulaInferior = new double[matriz.length][matriz[0].length];
-        marcados = new boolean[matriz.length][matriz[0].length];
+                {
+				{-1.0,-1.0  ,  1.0,  2.0},
+				{-1.0, 0.0  , 80.0, 60.0},
+                { 3.0, 24.0,  -4.0,  6.0},
+                { 4.0,16.0, 4.0, 2.0},
+                { 5.0,  3.0,  0.0,  1.0}};
+				
+				
+        celulaInferior = new double[matriz.length][matriz[0].length];	 
+		marcados = new boolean[matriz.length][matriz[0].length];
         this.celulaSuperior = matriz.clone();
         primeiroPasso();
         segundoPasso();
@@ -339,7 +352,21 @@ public class Simplex {
     */
     private void processarFuncao(){
 
-    }
+    } 
+	
+	public void solve(double[][] matriz){
+		celulaInferior = new double[matriz.length][matriz[0].length];	 
+		marcados = new boolean[matriz.length][matriz[0].length];
+        this.celulaSuperior = matriz.clone();
+        primeiroPasso();
+        segundoPasso();
+	}
+	
+	
+	public  void branchAndBound(double[][] matriz){
+		//solve(matriz);
+		
+	}
 
 
     public static void main(String[] args){
